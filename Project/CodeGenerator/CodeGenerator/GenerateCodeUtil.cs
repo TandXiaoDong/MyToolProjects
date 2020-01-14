@@ -119,29 +119,29 @@ namespace CodeGenerator
         /// <returns></returns>
         public static string GetDefaultValue(string columnType)
         {
-            switch (columnType)
+            switch (columnType.ToLower())
             {
                 case "string": return "String.Empty";
                 case "byte[]": return "{ 0 }";
                 case "bool": return "false";
                 case "byte": return "0";
                 case "decimal": return "0";
-                case "DateTime": return "DateTime.Now";
-                case "Double": return "0.0";
-                case "Guid": return "Guid.Empty";
+                case "datetime": return DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                case "double": return "0.0";
+                case "guid": return "Guid.Empty";
                 case "short": return "0";
                 case "int": return "0";
                 case "long": return "0";
-                case "object": return "null";
                 case "sbyte": return "0";
                 case "float": return "0";
-                case "TimeSpan": return "TimeSpan.Zero";
+                case "timespan": return "TimeSpan.Zero";
                 case "ushort": return "0";
                 case "uint": return "0";
                 case "ulong": return "0";
+                case "object": return "null";
                 default:
                     {
-                        return "null";
+                        return null;
                     }
             }
         }
