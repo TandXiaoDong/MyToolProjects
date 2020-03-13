@@ -126,7 +126,7 @@ namespace CodeGenerator
                 case "bool": return "false";
                 case "byte": return "0";
                 case "decimal": return "0";
-                case "datetime": return DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                case "datetime": return "DateTime.Now";
                 case "double": return "0.0";
                 case "guid": return "Guid.Empty";
                 case "short": return "0";
@@ -363,7 +363,6 @@ namespace CodeGenerator
                 sw.Close();
             }
             return tables.Count;
-            
         }
 
         #endregion
