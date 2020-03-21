@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AccessHelper">
+      <HintPath>..\AccessHelper.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -47,6 +50,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccessHelper.cs" />
+    <Compile Include="AccessModel.cs" />
     <Compile Include="Business\BaseManager.cs" />
     <Compile Include="Business\IBaseManager.cs" />
     <Compile Include="Business\Implements\F_binding_pcbaManager.cs" />

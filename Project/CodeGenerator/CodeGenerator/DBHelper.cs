@@ -14,7 +14,7 @@ namespace CodeGenerator
         /// <summary>
         /// 连接字符串
         /// </summary>
-        public static string CONSTR = String.Format("Server={0};Database={1};uid={2};pwd={3}", GlobalConfig.Item.Server, GlobalConfig.Item.DataBase, GlobalConfig.Item.UID, GlobalConfig.Item.PWD);
+        //public static string CONSTR = String.Format("Server={0};Database={1};uid={2};pwd={3}", GlobalConfig.Item.Server, GlobalConfig.Item.DataBase, GlobalConfig.Item.UID, GlobalConfig.Item.PWD);
 
         public static string ConnectionString
         {
@@ -23,6 +23,7 @@ namespace CodeGenerator
                 return String.Format("Server={0};Database={1};uid={2};pwd={3}", GlobalConfig.Item.Server, GlobalConfig.Item.DataBase, GlobalConfig.Item.UID, GlobalConfig.Item.PWD);
             }
         }
+
         /// <summary>
         /// 执行查询的方法
         /// </summary>
@@ -43,6 +44,7 @@ namespace CodeGenerator
             SqlDataReader reader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
             return reader;
         }
+        
         /// <summary>
         /// 执行查询的方法
         /// </summary>
@@ -66,5 +68,6 @@ namespace CodeGenerator
                 return ds;
             }
         }
+    
     }
 }

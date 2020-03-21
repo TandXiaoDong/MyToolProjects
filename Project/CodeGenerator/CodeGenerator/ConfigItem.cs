@@ -32,6 +32,22 @@ namespace CodeGenerator
 
         private string _TopComponentsNameSpace;
         private bool _IsAllowView = false;
+        private DataBaseTypeEnum dataBaseType;
+
+        public enum DataBaseTypeEnum
+        {
+            SQLServer,
+            MySQL,
+            ORACLE,
+            ACCESS,
+            SQLite
+        }
+
+        public DataBaseTypeEnum DataBaseType
+        {
+            get { return dataBaseType; }
+            set { dataBaseType = value; }
+        }
 
         public string Server
         {

@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Threading;
 using System.IO;
+using System.Data.SQLite;
 
 /// <summary>
 /// 代码生成器，目前支持SQL Server，后续增加MYSQL、ORACLE等
@@ -91,13 +92,22 @@ namespace CodeGenerator
         private void btnTestConnect_Click(object sender, EventArgs e)
         {
             this.RefreshConfig();
-            this.Connect();
+            if (this.tabControl1.SelectedTab == this.tabPage_SQLServer)
+            {
+                GlobalConfig.Item.DataBaseType = ConfigItem.DataBaseTypeEnum.SQLServer;
+                this.ConnectSQLServer();
+            }
+            else if (this.tabControl1.SelectedTab == this.tabPage_SQLite)
+            {
+                GlobalConfig.Item.DataBaseType = ConfigItem.DataBaseTypeEnum.SQLite;
+                ConnectSQLite();
+            }
         }
 
         /// <summary>
         /// 测试连接的方法
         /// </summary>
-        private void Connect()
+        private void ConnectSQLServer()
         {
             try
             {
@@ -129,6 +139,38 @@ namespace CodeGenerator
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        private void ConnectSQLite()
+        {
+            try
+            {
+                var connectString = "Data Source=dbdemos.db3";
+                SQLiteConnection sQLiteConnection = new SQLiteConnection(connectString);
+                sQLiteConnection.Open();
+                if (sQLiteConnection.State == ConnectionState.Open)
+                {
+                    MessageBox.Show("测试连接成功!");
+                    string file = Application.ExecutablePath;
+                    file = Path.GetDirectoryName(file) + "/config.txt";
+                    if (File.Exists(file)) File.Delete(file);
+                    ConfigFileUtil<ConfigItem>.SaveToFile(GlobalConfig.Item, file);
+                    this.btnNext.Enabled = true;
+                }
+                else
+                {
+                }
+                sQLiteConnection.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void FrmStart_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

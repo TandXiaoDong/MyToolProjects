@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Reflection;
 using System.Windows.Forms;
+using System.Data.SQLite;
 
 namespace CodeGenerator
 {
@@ -157,22 +158,45 @@ namespace CodeGenerator
             //DBHelper.ConnectionString = String.Format("Server={0};Database={1};uid={2};pwd={3}", GlobalConfig.Item.Server, GlobalConfig.Item.DataBase, GlobalConfig.Item.UID, GlobalConfig.Item.PWD);
             List<string> tables = new List<string>();
             string sql = String.Empty;
-            if (GlobalConfig.Item.IsAllowView)
+            if (GlobalConfig.Item.DataBaseType == ConfigItem.DataBaseTypeEnum.SQLServer)
             {
-                sql = "select name from sysobjects where xtype in('U','V') order by crdate";
-            }
-            else
-            {
-                sql = "select name from sysobjects where xtype='U' order by crdate";
-            }
-            using (SqlDataReader reader = DBHelper.GetReader(DBHelper.ConnectionString, CommandType.Text, sql, null))
-            {
-                while (reader.Read())
+                if (GlobalConfig.Item.IsAllowView)
                 {
-                    tables.Add(reader["name"] as string);
+                    sql = "select name from sysobjects where xtype in('U','V') order by crdate";
                 }
-                reader.Close();
+                else
+                {
+                    sql = "select name from sysobjects where xtype='U' order by crdate";
+                }
+                using (SqlDataReader reader = DBHelper.GetReader(DBHelper.ConnectionString, CommandType.Text, sql, null))
+                {
+                    while (reader.Read())
+                    {
+                        tables.Add(reader["name"] as string);
+                    }
+                    reader.Close();
+                }
             }
+            else if (GlobalConfig.Item.DataBaseType == ConfigItem.DataBaseTypeEnum.SQLite)
+            {
+                if (GlobalConfig.Item.IsAllowView)
+                {
+                    sql = "SELECT name FROM sqlite_master WHERE type in ('table','view') ORDER BY name";
+                }
+                else
+                {
+                    sql = "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name";
+                }
+                using (SQLiteDataReader reader = SQLiteHepler.GetReader(SQLiteHepler.ConnectionString, CommandType.Text, sql, null))
+                {
+                    while (reader.Read())
+                    {
+                        tables.Add(reader["name"] as string);
+                    }
+                    reader.Close();
+                }
+            }
+
             return tables;
         }
         #endregion
@@ -187,7 +211,15 @@ namespace CodeGenerator
         {
             Dictionary<string, string> dic = new Dictionary<string, string>();
             string sql = String.Format("select * from {0} where 1<>1", tableName);
-            DataSet ds = DBHelper.GetDataSet(DBHelper.ConnectionString, CommandType.Text, sql, null);
+            DataSet ds = new DataSet();
+            if (GlobalConfig.Item.DataBaseType == ConfigItem.DataBaseTypeEnum.SQLServer)
+            {
+                ds = DBHelper.GetDataSet(DBHelper.ConnectionString, CommandType.Text, sql, null);
+            }
+            else if (GlobalConfig.Item.DataBaseType == ConfigItem.DataBaseTypeEnum.SQLite)
+            {
+                ds = SQLiteHepler.GetDataSet(SQLiteHepler.ConnectionString, CommandType.Text, sql, null);
+            }
             foreach (DataColumn col in ds.Tables[0].Columns)
             {
                 dic.Add(col.ColumnName, GetCSharpVariableType(col.DataType));
@@ -206,24 +238,42 @@ namespace CodeGenerator
         {
             List<string> lst = new List<string>();
             string sql = "sp_help";
-            SqlParameter[] values ={
-                new SqlParameter("@objname",tableName)
-            };
-            DataSet ds = DBHelper.GetDataSet(DBHelper.ConnectionString, CommandType.StoredProcedure, sql, values);
-            if (ds.Tables.Count >= 7)
+            DataSet ds = new DataSet();
+            if (GlobalConfig.Item.DataBaseType == ConfigItem.DataBaseTypeEnum.SQLServer)
             {
-                foreach (DataRow row in ds.Tables[6].Rows)
+                SqlParameter[] values ={new SqlParameter("@objname",tableName)};
+                ds = DBHelper.GetDataSet(DBHelper.ConnectionString, CommandType.StoredProcedure, sql, values);
+                if (ds.Tables.Count >= 7)
                 {
-                    //if (row["constraint_type"].ToString() == "PRIMARY KEY (clustered)")
-                    //2011-9-9修正，增加了对非聚集主键的解析支持
-                    if (row["constraint_type"].ToString().StartsWith("PRIMARY KEY"))
+                    foreach (DataRow row in ds.Tables[6].Rows)
                     {
-                        string[] keys = row["constraint_keys"].ToString().Split(new char[] { ',' });
-                        foreach (string key in keys)
+                        //if (row["constraint_type"].ToString() == "PRIMARY KEY (clustered)")
+                        //2011-9-9修正，增加了对非聚集主键的解析支持
+                        if (row["constraint_type"].ToString().StartsWith("PRIMARY KEY"))
                         {
-                            lst.Add(key.Trim());
+                            string[] keys = row["constraint_keys"].ToString().Split(new char[] { ',' });
+                            foreach (string key in keys)
+                            {
+                                lst.Add(key.Trim());
+                            }
+                            break;
                         }
-                        break;
+                    }
+                }
+            }
+            else if (GlobalConfig.Item.DataBaseType == ConfigItem.DataBaseTypeEnum.SQLite)
+            {
+                //SQLiteParameter[] values = { new SQLiteParameter("@objname", tableName) };
+                sql = $"pragma table_info ('{tableName}') ";
+                ds = SQLiteHepler.GetDataSet(SQLiteHepler.ConnectionString, CommandType.Text, sql, null);
+                var dt = ds.Tables[0];
+                if (dt.Rows.Count > 0)
+                {
+                    var dataRow = dt.Select("pk = '1'");
+                    foreach (var dr in dataRow)
+                    {
+                        var primaryKey = dr["name"].ToString();
+                        lst.Add(primaryKey);
                     }
                 }
             }
@@ -239,12 +289,18 @@ namespace CodeGenerator
         /// <returns>返回自增字段名</returns>
         public static string GetIdentityColumn(string tableName)
         {
-            string sql = "sp_help";
-            SqlParameter[] values ={
-                new SqlParameter("@objname",tableName)
-            };
-            DataSet ds = DBHelper.GetDataSet(DBHelper.ConnectionString, CommandType.StoredProcedure, sql, values);
-            string columnName = ds.Tables[2].Rows[0]["Identity"].ToString();
+            var columnName = "";
+            if (GlobalConfig.Item.DataBaseType == ConfigItem.DataBaseTypeEnum.SQLServer)
+            {
+                string sql = "sp_help";
+                SqlParameter[] values = { new SqlParameter("@objname", tableName) };
+                DataSet ds = DBHelper.GetDataSet(DBHelper.ConnectionString, CommandType.StoredProcedure, sql, values);
+                columnName = ds.Tables[2].Rows[0]["Identity"].ToString();
+            }
+            else if (GlobalConfig.Item.DataBaseType == ConfigItem.DataBaseTypeEnum.SQLite)
+            {
+
+            }
             return columnName;
         }
         #endregion
@@ -472,8 +528,14 @@ namespace CodeGenerator
             int cnt = 0;
 
             #region 生成DBHelper类
-
-            GenerateClassFromTemplateFile("DBHelper", GlobalConfig.Item.DAONameSpace, String.Empty, String.Empty);
+            if (GlobalConfig.Item.DataBaseType == ConfigItem.DataBaseTypeEnum.SQLServer)
+            {
+                GenerateClassFromTemplateFile("SQLServerHelper", GlobalConfig.Item.DAONameSpace, String.Empty, String.Empty);
+            }
+            else if (GlobalConfig.Item.DataBaseType == ConfigItem.DataBaseTypeEnum.SQLite)
+            {
+                GenerateClassFromTemplateFile("SQLiteHelper", GlobalConfig.Item.DAONameSpace, String.Empty, String.Empty);
+            }
             cnt++;
 
             #endregion
@@ -486,8 +548,14 @@ namespace CodeGenerator
             #endregion
 
             #region 生成数据访问抽象基类
-
-            GenerateClassFromTemplateFile("BaseService", GlobalConfig.Item.DAONameSpace, String.Empty, String.Empty);
+            if (GlobalConfig.Item.DataBaseType == ConfigItem.DataBaseTypeEnum.SQLServer)
+            {
+                GenerateClassFromTemplateFile("BaseSQLServerService", GlobalConfig.Item.DAONameSpace, String.Empty, String.Empty);
+            }
+            else if (GlobalConfig.Item.DataBaseType == ConfigItem.DataBaseTypeEnum.SQLite)
+            {
+                GenerateClassFromTemplateFile("BaseSQLiteService", GlobalConfig.Item.DAONameSpace, String.Empty, String.Empty);
+            }
             cnt++;
 
             #endregion
