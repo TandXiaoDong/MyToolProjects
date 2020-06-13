@@ -180,6 +180,12 @@ namespace ${DAONameSpace}
         /// <param name="entity">对应新记录的实体数据</param>
         /// <returns>返回追加记录的主键值</returns>
         int Insert(T entity);
+		/// <summary>
+        /// 添加新记录
+        /// </summary>
+        /// <param name="entitys">对应新记录的实体数据</param>
+        /// <returns>返回追加记录的主键值</returns>
+        int Insert(List<T> entitys);
         /// <summary>
         /// 更新记录
         /// </summary>

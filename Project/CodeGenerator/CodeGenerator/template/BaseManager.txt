@@ -158,6 +158,11 @@ namespace ${BIZNameSpace}
             return this.base${DAOClassPostFix}.Insert(entity);
         }
 
+		 public int Insert(List<T> entitys)
+        {
+            return this.base${DAOClassPostFix}.Insert(entitys);
+        }
+
         public int Update(T entity)
         {
             return this.base${DAOClassPostFix}.Update(entity);
