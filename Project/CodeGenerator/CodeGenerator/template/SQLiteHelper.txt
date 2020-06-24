@@ -38,6 +38,7 @@ namespace ${DAONameSpace}
     {
         SQLiteConnection con = new SQLiteConnection(connectionString);
         con.Open();
+            //con.ChangePassword("abc12320200624..");//º”√‹
         return con;
     }
     /// <summary>
