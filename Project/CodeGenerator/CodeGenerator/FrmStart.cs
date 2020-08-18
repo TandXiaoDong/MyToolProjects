@@ -145,7 +145,9 @@ namespace CodeGenerator
         {
             try
             {
-                var connectString = "Data Source=dbdemos.db3";
+                var connectString = "Data Source=cabledata.db";
+                //var path = @"F:\work\MyRepository\FigkeyRepository\CableTestSystem\project\CableTestManager\CableTestManager\bin\Debug\cabledata.db";
+                //var connectString = "Data Source=" + path + ";Version=3";
                 SQLiteConnection sQLiteConnection = new SQLiteConnection(connectString);
                 sQLiteConnection.Open();
                 if (sQLiteConnection.State == ConnectionState.Open)
