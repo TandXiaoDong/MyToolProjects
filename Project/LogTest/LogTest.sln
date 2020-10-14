@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29609.76
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogTest", "LogTest\LogTest.csproj", "{47D6B558-FE50-43FE-A9B3-EC2EC38B25F1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogoTest", "LogTest\LogoTest.csproj", "{47D6B558-FE50-43FE-A9B3-EC2EC38B25F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
