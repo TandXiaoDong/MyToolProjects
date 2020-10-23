@@ -1,0 +1,228 @@
+using SuperWebSocket;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.ServiceProcess;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Xml.Serialization;
+using System.IO.Ports;
+using SuperSocket.SocketBase.Config;
+using SuperSocket.SocketBase;
+
+namespace RC_InterfaceService
+{
+
+    public partial class Service1 : ServiceBase
+    {
+        private readonly string _configFile = AppDomain.CurrentDomain.BaseDirectory + "\\Config.xml";
+
+        public Service1()
+        {
+            InitializeComponent();
+
+            PortDataConfig config = null;
+            if (!File.Exists(_configFile))
+            {
+                config = new PortDataConfig
+                {
+                    BaudRate = 9600,
+                    PortName = "COM10",
+                    ServerPort = 9100,
+                    Serverforward = "/SerialWebServer"
+                };
+                Serializer.ToXml(config, _configFile);
+            }
+            else
+            {
+                config = Serializer.FromXml<PortDataConfig>(_configFile);
+            }
+            CodecontxtData.Config = config;
+            CodecontxtData.Port = new SerialPort(config.PortName)
+            {
+                BaudRate = config.BaudRate,
+                Encoding = Encoding.UTF8,
+                Handshake = Handshake.None,
+                DataBits = 8
+            };
+
+            CodecontxtData.Port.Open();
+
+
+        }
+        Dictionary<string, string> idpairs=new Dictionary<string, string>();
+        WebSocketServer appServer;
+        protected override void OnStart(string[] args)
+        {
+
+             appServer = new WebSocketServer();             //new一个WebSocketServer 对象
+            ServerConfig serverConfig = new ServerConfig                   //new serverConfig对象，设置配置信息
+            {
+                Security = "tls",
+                Port = 2015,//set the listening port
+                MaxConnectionNumber = 10000,
+               Certificate = new CertificateConfig
+               {
+                  FilePath = "user-rsa.pfx",
+                   Password = "rencheng"
+              }
+            };
+            funTools funTool = new funTools();
+            string filePath = @"E:\MyServiceLog.txt";                       //往这个文件写入相关信息
+            using (FileStream stream = new FileStream(filePath, FileMode.Append))
+            using (StreamWriter writer = new StreamWriter(stream))
+            {
+                writer.WriteLine($"{DateTime.Now},服务启动aa！");
+            }
+            try
+            {
+               
+                if (!appServer.Setup(serverConfig)) //Setup the appServer
+                {
+                  
+                    using (FileStream stream = new FileStream(filePath, FileMode.Append))
+                    using (StreamWriter writer = new StreamWriter(stream))
+                    {
+                        writer.WriteLine($"{DateTime.Now},开启服务器失败");
+                    }
+                    return;
+                }
+
+                if (!appServer.Start())//Try to start the appServer
+                {
+                  
+                    using (FileStream stream = new FileStream(filePath, FileMode.Append))
+                    using (StreamWriter writer = new StreamWriter(stream))
+                    {
+                        writer.WriteLine($"{DateTime.Now},连接服务器失败");
+                    }
+                    return;
+                }
+                
+                appServer.Start();
+              
+                
+                //新的 接收串口消息
+                  if (CodecontxtData.Port.IsOpen)
+                    {
+                        CodecontxtData.Port.DataReceived += NewDataReceived;
+                    }
+              
+                //appServer.NewDataReceived += appServer_NewDataReceived;
+                appServer.NewMessageReceived += appServer_NewMessageReceived;//原来的是这样用的
+
+            }
+            catch (Exception ex)
+            {
+                
+                using (FileStream stream = new FileStream(filePath, FileMode.Append))
+                using (StreamWriter writer = new StreamWriter(stream))
+                {
+                    writer.WriteLine($"appServer启动失v败");
+                }
+            }
+        }
+
+        private void NewDataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+              var data = CodecontxtData.Port.ReadExisting();
+            //WebSocketSession session = new SuperWebSocket.WebSocketSession();
+            var sessions=   appServer.GetSessions(b=>true);
+
+            if (idpairs.ContainsKey("1"))
+            {
+                session.Send("okok");
+                if (!string.IsNullOrEmpty(data))
+                {
+                    session.Send(data);
+                }
+                try
+                {
+                    foreach (var ss in session.AppServer.GetAllSessions())
+                    {
+                        string filePath = @"E:\MyServiceLog.txt"; //往这个文件写入相关信息
+
+                        using (FileStream stream = new FileStream(filePath, FileMode.Append))
+                        using (StreamWriter writer = new StreamWriter(stream))
+                        {
+                            writer.WriteLine($"11" + ss);//这里输出错误 失败未将对象引用设置到对象的实例。
+                                                         //失败xxxxxxxxxxxxxxxxxxxxxx未将对象引用设置到对象的实例。
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    string filePath = @"E:\MyServiceLog.txt"; //往这个文件写入相关信息
+
+                    using (FileStream stream = new FileStream(filePath, FileMode.Append))
+                    using (StreamWriter writer = new StreamWriter(stream))
+                    {
+                        writer.WriteLine($"失败" + data + ex.Message.ToString());//这里输出错误 失败未将对象引用设置到对象的实例。
+                                                                               //失败xxxxxxxxxxxxxxxxxxxxxx未将对象引用设置到对象的实例。
+                    }
+                }
+            }  
+              
+
+            
+
+        }
+        private void appServer_NewMessageReceived(SuperWebSocket.WebSocketSession session, string value)
+        {
+            session.Send(funTools.getJsonFromHashtable(null, "1", "服务端收到了客户端发来的消息"));
+
+            var data = CodecontxtData.Port.ReadExisting();
+            if (!string.IsNullOrEmpty(data))
+            {
+                session.Send(data);
+            }
+            else
+            {
+                string filePath = @"E:\MyServiceLog.txt";                       //往这个文件写入相关信息
+                using (FileStream stream = new FileStream(filePath, FileMode.Append))
+                using (StreamWriter writer = new StreamWriter(stream))
+                {
+                    writer.WriteLine($"{DateTime.Now},服xx务启动！");
+                }
+            }
+            //idpairs.add("id","session")
+
+        }
+
+        public void SendToClient(SuperWebSocket.WebSocketSession reciveSession, Message message)
+        {
+
+            reciveSession.Send("OK");
+        }
+        private void appServerxx_NewMessageReceived(SuperWebSocket.WebSocketSession session, string value)
+        {
+            session.Send(funTools.getJsonFromHashtable(null, "1", "服务端收到了客户端发来的消息"));
+
+            var data = CodecontxtData.Port.ReadExisting();
+            if (!string.IsNullOrEmpty(data))
+            {
+                session.Send(data);
+            }
+            else
+            {
+                string filePath = @"E:\MyServiceLog.txt";                       //往这个文件写入相关信息
+                using (FileStream stream = new FileStream(filePath, FileMode.Append))
+                using (StreamWriter writer = new StreamWriter(stream))
+                {
+                    writer.WriteLine($"{DateTime.Now},服xx务启动！");
+                }
+            }
+
+        }
+        protected override void OnStop()
+        {
+            //服务停止时没有需要做的事，放着不管，但别删除该方法，他是有系统自动生成的，删除可能会引起错误
+        }
+    }
+}
