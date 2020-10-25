@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using System.IO;
 
 namespace RC_InterfaceService
 {
@@ -25,6 +26,21 @@ namespace RC_InterfaceService
         public static void ShowErrMsg(string strinfo)
         {
             MessageBox.Show(strinfo, Application.ProductName,MessageBoxButtons.OK,MessageBoxIcon.Exclamation);
+        }
+
+        public static void Log(string info)
+        {
+            var path = "C:\\data\\log\\";
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            path += System.DateTime.Now.ToString("yyyyMMddHH");
+            using (FileStream fs = new FileStream(path, FileMode.Append))
+            {
+                using (StreamWriter sw = new StreamWriter(fs))
+                {
+                    sw.WriteLine(info);
+                }
+            }
         }
 
         /// <summary>

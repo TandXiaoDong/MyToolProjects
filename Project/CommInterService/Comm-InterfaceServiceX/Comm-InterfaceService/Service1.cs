@@ -23,6 +23,9 @@ namespace RC_InterfaceService
     public partial class Service1 : ServiceBase
     {
         private readonly string _configFile = AppDomain.CurrentDomain.BaseDirectory + "\\Config.xml";
+        private int revDataLen = 11;
+        private List<byte> revDataBuffer = new List<byte>();
+        private Object obj = new object();
 
         public Service1()
         {
@@ -137,18 +140,17 @@ namespace RC_InterfaceService
 
         private void NewDataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-
             var data = CodecontxtData.Port.ReadExisting();
+            funTools.Log("data：" + data);
             //Regex regex = new Regex(@"[STX](.*?)[ETX]", RegexOptions.IgnoreCase);
-          
             char STX = Convert.ToChar(2);//帧开始符
-            char ETX = Convert.ToChar(3);//帧开始符
+            char ETX = Convert.ToChar(3);//帧结束符
 
             data = data.Replace(STX + "", "");
-            data = data.Replace(Convert.ToChar(13)+ "", "");
+            data = data.Replace(Convert.ToChar(13) + "", "");
             data = data.Replace(Convert.ToChar(10) + "", "");
 
-            data = data.Split(ETX)[0] ;
+            data = data.Split(ETX)[0];
 
             /*
             string pattern = @"[STX](.*?)[ETX]";
@@ -159,15 +161,68 @@ namespace RC_InterfaceService
             }  */
 
 
-            var sessions =  appServer.GetSessions(b=>true);
+            var sessions = appServer.GetSessions(b => true);
             Hashtable ht = new Hashtable();
             ht.Add("data", data);
             foreach (var ss in sessions)
             {
-                ss.Send(funTools.getJsonFromHashtable(ht, "1","数据获取成功" ));
+                ss.Send(funTools.getJsonFromHashtable(ht, "1", "数据获取成功"));
             }
         }
-       
+
+        private void NewDataReceived2(object sender, SerialDataReceivedEventArgs e)
+        {
+            var data = CodecontxtData.Port.ReadExisting();
+            if (data.Length <= 0)
+                return;
+            byte[] revBuffer = new byte[CodecontxtData.Port.BytesToRead];
+            CodecontxtData.Port.Read(revBuffer, 0, revBuffer.Length);
+            //完整数据 02 + data(8) + crc + 03
+            //data:数据类型1 + 测量值6 + 操作类型标志1
+            funTools.Log("revData："+ BitConverter.ToString(revBuffer));
+            this.revDataBuffer.AddRange(revBuffer);
+            ProcessRevData(this.revDataBuffer.ToArray());
+        }
+
+        private byte[] ConvertStr2Byte(string data)
+        {
+            byte[] buffer = new byte[data.Length / 2];
+            int j = 0;
+            for (int i = 0; i < data.Length; i += 2)
+            {
+                buffer[j] = Convert.ToInt32(data[i], 10);
+                j++;
+            }
+        }
+
+        private void ProcessRevData(byte[] buffer)
+        {
+            lock (this.obj)
+            {
+                if (buffer.Length < this.revDataLen)
+                    return;
+                if (buffer[0] != 0x02 && buffer[10] != 0x03)
+                    return;
+                byte[] data = new byte[this.revDataLen];
+                Array.Copy(buffer, 0, data, 0, data.Length);
+                this.revDataBuffer.RemoveRange(0, data.Length);
+
+                //转发数据
+                var sessions = appServer.GetSessions(b => true);
+                Hashtable ht = new Hashtable();
+                ht.Add("data", data);
+                foreach (var ss in sessions)
+                {
+                    ss.Send(funTools.getJsonFromHashtable(ht, "1", "数据获取成功"));
+                }
+
+                if (this.revDataBuffer.Count >= this.revDataLen)
+                {
+                    ProcessRevData(this.revDataBuffer.ToArray());
+                }
+            }
+        }
+
         protected override void OnStop()
         {
             //服务停止时没有需要做的事，放着不管，但别删除该方法，他是有系统自动生成的，删除可能会引起错误
