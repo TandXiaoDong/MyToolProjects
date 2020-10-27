@@ -30,7 +30,7 @@ namespace RC_InterfaceService
 
         public static void Log(string info)
         {
-            var path = "C:\\data\\log\\";
+            var path = AppDomain.CurrentDomain.BaseDirectory  + "data\\log\\";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             path += System.DateTime.Now.ToString("yyyyMMddHH");

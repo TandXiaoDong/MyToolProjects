@@ -30,30 +30,8 @@ namespace WindowsFormsApp1
 
         private void testRevdata()
         {
-            List<byte> list = new List<byte>();
-            for (int i = 0; i < 22;i++)
-            {
-                if (i == 0)
-                {
-                    list.Add(0x02);
-                }
-                else if (i == 10)
-                {
-                    list.Add(0x03);
-                }
-                else if (i == 11)
-                {
-                    list.Add(0x02);
-                }
-                else if (i == 21)
-                {
-                    list.Add(0x03);
-                }
-                else
-                {
-                    list.Add((byte)i);
-                }
-            }
+            var list = Encoding.ASCII.GetBytes("data：20016.01�20038.01�20056.41�20060.91�20060.81�20061.01�20060.91�20060.91�20060.91�20060.91�20060.92�10166.02�60022.12�C0060.62�*******��ǰ������������*******2020��10��27��             12:00-------------------------------��� 166.0cm        ����  60.9kgBMI   22.1(����ֵ 18.5 - 23.9)��������  60.6kg**********���β������**********�000170gi");
+
             this.revDataBuffer.AddRange(list);
             ProcessRevData(this.revDataBuffer.ToArray());
         }
@@ -64,20 +42,40 @@ namespace WindowsFormsApp1
             {
                 if (buffer.Length < this.revDataLen)
                     return;
+                if (!CheckStartFlag(buffer))
+                    return;
+                buffer = this.revDataBuffer.ToArray();
                 if (buffer[0] != 0x02 && buffer[10] != 0x03)
                     return;
                 byte[] data = new byte[this.revDataLen];
                 Array.Copy(buffer, 0, data, 0, data.Length);
                 this.revDataBuffer.RemoveRange(0, data.Length);
+                Log("data="+ BitConverter.ToString(data));
 
-                //转发数据
                 Hashtable ht = new Hashtable();
-                ht.Add("data", data);
+                ht.Add("data", Encoding.ASCII.GetString(data));
+                getJsonFromHashtable(ht, "1", "数据获取成功");
 
                 if (this.revDataBuffer.Count >= this.revDataLen)
                 {
                     ProcessRevData(this.revDataBuffer.ToArray());
                 }
+            }
+        }
+
+        private bool CheckStartFlag(byte[] buffer)
+        {
+            if (buffer.Length <= 0)
+                return false;
+
+            if (buffer[0] != 0x02)
+            {
+                this.revDataBuffer.RemoveRange(0, 1);
+                return CheckStartFlag(this.revDataBuffer.ToArray());
+            }
+            else
+            {
+                return true;
             }
         }
 
