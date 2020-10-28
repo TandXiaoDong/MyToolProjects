@@ -11,7 +11,8 @@ namespace SpirePdfDemo
         static void Main(string[] args)
         {
             //加载PDF文档
-            Spire.Pdf.PdfDocument sourceDocument = new Spire.Pdf.PdfDocument(@"F:\pdftest\20200718竞赛题库（仅供参考）已查.pdf");
+            var path = AppDomain.CurrentDomain.BaseDirectory + "pdftest.pdf";
+            Spire.Pdf.PdfDocument sourceDocument = new Spire.Pdf.PdfDocument(path);
             //创建新PDF文档
             Spire.Pdf.PdfDocument newDocument = new Spire.Pdf.PdfDocument();
             //设置新文档页边距0
@@ -40,7 +41,7 @@ namespace SpirePdfDemo
                 //newPage.Canvas.DrawString("文字", new Spire.Pdf.Graphics.PdfFont(Spire.Pdf.Graphics.PdfFontFamily.Courier, 20f), Spire.Pdf.Graphics.PdfBrushes.White, new PointF(0, 0));
             }
 
-            newDocument.SaveToFile(@"F:\pdftest\save.doc", Spire.Pdf.FileFormat.DOC);
+            newDocument.SaveToFile(path.Replace("pdf", "docx"), Spire.Pdf.FileFormat.DOC);
         }
     }
 }

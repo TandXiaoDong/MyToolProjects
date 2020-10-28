@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using Telerik.WinControls;
 using Spire.Pdf;
+using Spire.Doc;
 using CommonUtils.FileHelper;
 using Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Interop.Word;
@@ -14,6 +15,9 @@ using Microsoft.Office.Interop.PowerPoint;
 using Microsoft.Office.Interop;
 using Microsoft.Office;
 using Microsoft.Office.Core;
+//using iTextSharp.text.pdf;
+//using iTextSharp.text;
+using System.IO;
 
 namespace ConvertTool
 {
@@ -42,11 +46,63 @@ namespace ConvertTool
         {
             if (sourchFilePath.Contains(".pdf"))
             {
-                currentSaveFilePath = sourchFilePath.Replace(".pdf", "") + ".doc";
+                //this.currentSaveFilePath = sourchFilePath.Replace(".pdf", "") + ".doc";
+                this.currentSaveFilePath = AppDomain.CurrentDomain.BaseDirectory + "removeWater.docx";
             }
-            PdfDocument doc = new PdfDocument();
-            doc.LoadFromFile(sourchFilePath);
-            doc.SaveToFile(currentSaveFilePath, FileFormat.DOCX);
+            sourchFilePath = AppDomain.CurrentDomain.BaseDirectory + "pdftest001.pdf";
+            //ClearPdfFilesFirstPage(sourchFilePath, sourchFilePath);
+
+            //Spire.Pdf.PdfDocument doc = new Spire.Pdf.PdfDocument();
+            //doc.LoadFromFile(sourchFilePath);
+            //doc.SaveToFile(this.currentSaveFilePath, Spire.Pdf.FileFormat.DOCX);
+            AspReplace();
+
+        }
+
+        private void AspReplace()
+        {
+            this.currentSaveFilePath = AppDomain.CurrentDomain.BaseDirectory + "removeWater.docx";
+
+            Aspose.Words.Document doc = new Aspose.Words.Document(this.currentSaveFilePath);
+            doc.Range.Replace("测试", "sidd", true, false);
+            doc.Save(AppDomain.CurrentDomain.BaseDirectory + "sid.docx");
+        }
+
+        private void RemoveWaterDoc()
+        {
+            this.currentSaveFilePath = AppDomain.CurrentDomain.BaseDirectory + "removeWater.docx"; 
+            Spire.Doc.Document doc = new Spire.Doc.Document();
+            doc.LoadFromFile(this.currentSaveFilePath, Spire.Doc.FileFormat.Docx2010);
+            doc.Watermark = null;
+            doc.SaveToFile(AppDomain.CurrentDomain.BaseDirectory + "quchu.docx", Spire.Doc.FileFormat.Docx2010);
+        }
+
+        /// <summary>
+        /// 使用第三方插件 =》 去除  Evaluation Warning : The document was created with Spire.PDF for .NET.
+        /// </summary>
+        /// <param name="sourcePdfs">原文件地址</param>
+        /// <param name="outputPdf">生成后的文件地址</param>
+        private void ClearPdfFilesFirstPage(string sourcePdf, string outputPdf)
+        {
+            //PdfReader reader = null;
+            //iTextSharp.text.Document document = new iTextSharp.text.Document();
+            //PdfImportedPage page = null;
+            //PdfCopy pdfCpy = null;
+            //int n = 0;
+            //reader = new PdfReader(sourcePdf);
+            //reader.ConsolidateNamedDestinations();
+            //n = reader.NumberOfPages;
+            //document = new iTextSharp.text.Document(reader.GetPageSizeWithRotation(1));
+            //pdfCpy = new PdfCopy(document, new FileStream(outputPdf, FileMode.Create));
+            //document.Open();
+            //for (int j = 1; j <= n; j++)
+            //{
+            //    page = pdfCpy.GetImportedPage(reader, j);
+            //    pdfCpy.AddPage(page);
+
+            //}
+            //reader.Close();
+            //document.Close();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
