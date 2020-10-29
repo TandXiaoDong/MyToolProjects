@@ -15,9 +15,17 @@ using Microsoft.Office.Interop.PowerPoint;
 using Microsoft.Office.Interop;
 using Microsoft.Office;
 using Microsoft.Office.Core;
-//using iTextSharp.text.pdf;
-//using iTextSharp.text;
+using iTextSharp.text.pdf;
+using iTextSharp.text;
+using iTextSharp.text.pdf.parser;
 using System.IO;
+using System.Drawing.Imaging;
+using iTextSharp.text.pdf;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ConvertTool
 {
@@ -47,7 +55,7 @@ namespace ConvertTool
             if (sourchFilePath.Contains(".pdf"))
             {
                 //this.currentSaveFilePath = sourchFilePath.Replace(".pdf", "") + ".doc";
-                this.currentSaveFilePath = AppDomain.CurrentDomain.BaseDirectory + "removeWater.docx";
+                this.currentSaveFilePath = AppDomain.CurrentDomain.BaseDirectory + "removeWater.doc";
             }
             sourchFilePath = AppDomain.CurrentDomain.BaseDirectory + "pdftest001.pdf";
             //ClearPdfFilesFirstPage(sourchFilePath, sourchFilePath);
@@ -55,8 +63,10 @@ namespace ConvertTool
             //Spire.Pdf.PdfDocument doc = new Spire.Pdf.PdfDocument();
             //doc.LoadFromFile(sourchFilePath);
             //doc.SaveToFile(this.currentSaveFilePath, Spire.Pdf.FileFormat.DOCX);
-            AspReplace();
 
+            //AspReplace();
+            //ExtractImage(sourchFilePath);
+            ExtractTextFromPDFPage(sourchFilePath);
         }
 
         private void AspReplace()
@@ -64,8 +74,91 @@ namespace ConvertTool
             this.currentSaveFilePath = AppDomain.CurrentDomain.BaseDirectory + "removeWater.docx";
 
             Aspose.Words.Document doc = new Aspose.Words.Document(this.currentSaveFilePath);
-            doc.Range.Replace("测试", "sidd", true, false);
+            doc.Range.Replace("测试", "mmmm");
             doc.Save(AppDomain.CurrentDomain.BaseDirectory + "sid.docx");
+        }
+
+        private void ExtractImage(string pdfFile)
+        {
+            PdfReader pdfReader = new PdfReader(pdfFile);
+            for (int pageNumber = 1; pageNumber <= pdfReader.NumberOfPages; pageNumber++)
+            {
+                PdfReader pdf = new PdfReader(pdfFile);
+                PdfDictionary pg = pdf.GetPageN(pageNumber);
+                PdfDictionary res = (PdfDictionary)PdfReader.GetPdfObject(pg.Get(PdfName.RESOURCES));
+                PdfDictionary xobj = (PdfDictionary)PdfReader.GetPdfObject(res.Get(PdfName.XOBJECT));
+                try
+                {
+                    foreach (PdfName name in xobj.Keys)
+                    {
+                        PdfObject obj = xobj.Get(name);
+                        if (obj.IsIndirect())
+                        {
+                            PdfDictionary tg = (PdfDictionary)PdfReader.GetPdfObject(obj);
+                            string width = tg.Get(PdfName.WIDTH).ToString();
+                            string height = tg.Get(PdfName.HEIGHT).ToString();
+                            //ImageRenderInfo imgRI = ImageRenderInfo.CreateForXObject((GraphicsState)new Matrix(float.Parse(width), float.Parse(height)), (PRIndirectReference)obj, tg);
+                            ImageRenderInfo imgRI = ImageRenderInfo.CreateForXObject(new GraphicsState(), (PRIndirectReference)obj, tg);
+                            RenderImage(imgRI, pageNumber);
+                        }
+                    }
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+        }
+
+        private void RenderImage(ImageRenderInfo renderInfo, int page)
+        {
+            PdfImageObject image = renderInfo.GetImage();
+            using (var dotnetImg = image.GetDrawingImage())
+            {
+                if (dotnetImg != null)
+                {
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        dotnetImg.Save(ms, ImageFormat.Tiff);
+                        Bitmap d = new Bitmap(dotnetImg);
+                        d.Save(AppDomain.CurrentDomain.BaseDirectory + "image\\"+DateTime.Now.ToString("yyyyMMddHHmmss") + "_" + page + ".tiff");
+                    }
+                }
+            }
+        }
+
+        public void ExtractTextFromPDFPage(string pdfFile)
+        {
+            PdfReader reader = new PdfReader(pdfFile);
+            PdfHelper.LocationTextExtractionStrategyEx pz = new PdfHelper.LocationTextExtractionStrategyEx();
+
+            iTextSharp.text.pdf.parser.PdfReaderContentParser p = new iTextSharp.text.pdf.parser.PdfReaderContentParser(readerTemp);
+            p.ProcessContent<PdfHelper.LocationTextExtractionStrategyEx>(1, pz);
+
+            Console.WriteLine(pz.GetResultantText());//文字坐标信息等
+            int n = reader.NumberOfPages;
+            for (int i = 1; i <= n; i++)
+            {
+                string text = PdfTextExtractor.GetTextFromPage(reader, i);
+                WriteLog(text);
+            }
+            try { reader.Close(); }
+            catch { }
+        }
+
+        private void WriteLog(string content)
+        {
+            var path = AppDomain.CurrentDomain.BaseDirectory + "image\\";
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            path += DateTime.Now.ToString("yyyyMMddHH") + ".txt";
+            using (FileStream fs = new FileStream(path, FileMode.Append))
+            {
+                using (StreamWriter sw = new StreamWriter(fs))
+                {
+                    sw.WriteLine(content);
+                }
+            }
         }
 
         private void RemoveWaterDoc()
