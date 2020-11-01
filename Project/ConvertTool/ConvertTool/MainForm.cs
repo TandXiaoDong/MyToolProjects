@@ -14,6 +14,11 @@ using Microsoft.Office.Interop.PowerPoint;
 using Microsoft.Office.Interop;
 using Microsoft.Office;
 using Microsoft.Office.Core;
+using System.Web;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using System.IO;
+using System.Drawing;
 
 namespace ConvertTool
 {
@@ -44,16 +49,61 @@ namespace ConvertTool
             {
                 currentSaveFilePath = sourchFilePath.Replace(".pdf", "") + ".doc";
             }
-            PdfDocument doc = new PdfDocument();
+            Spire.Pdf.PdfDocument doc = new Spire.Pdf.PdfDocument();
             doc.LoadFromFile(sourchFilePath);
             doc.SaveToFile(currentSaveFilePath, FileFormat.DOCX);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            ConvertJPG2PDF();
+            //UnionPDF();
             this.menu_addFile.Click += Menu_addFile_Click;
             this.btn_startConvert.Click += Btn_startConvert_Click;
             this.radDock1.ActiveWindowChanged += RadDock1_ActiveWindowChanged;
+        }
+
+        private void UnionPDF()
+        {
+            var pdf1 = @"D:\WorkDocument\MyRepository\CommonRepository\MyToolProjects\Project\ConvertTool\ConvertTool\bin\Debug\pdf\pdf1.pdf";
+            var pdf2 = @"D:\WorkDocument\MyRepository\CommonRepository\MyToolProjects\Project\ConvertTool\ConvertTool\bin\Debug\pdf\pdf2.pdf";
+            string[] files = new string[] {pdf1, pdf2};
+            string outputFile = @"D:\WorkDocument\MyRepository\CommonRepository\MyToolProjects\Project\ConvertTool\ConvertTool\bin\Debug\pdf\pdf3.pdf";
+            Spire.Pdf.PdfDocumentBase doc = Spire.Pdf.PdfDocument.MergeFiles(files);
+            doc.Save(outputFile, FileFormat.PDF);
+            System.Diagnostics.Process.Start(outputFile);
+        }
+
+        void ConvertJPG2PDF()
+        {
+            var jpgfile = @"D:\WorkDocument\MyRepository\CommonRepository\MyToolProjects\Project\ConvertTool\ConvertTool\bin\Debug\pdf\img1.jpg";
+            var pdffile = @"D:\WorkDocument\MyRepository\CommonRepository\MyToolProjects\Project\ConvertTool\ConvertTool\bin\Debug\pdf\img1.pdf";
+            var document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A4, 25, 25, 25, 25);
+            using (var stream = new FileStream(pdffile, FileMode.Create))//, FileAccess.Write, FileShare.None
+            {
+                PdfWriter.GetInstance(document, stream);
+                document.Open();
+                AddImage2Document(document, jpgfile);
+                document.Close();
+            }
+        }
+
+        private void AddImage2Document(iTextSharp.text.Document document, string jpgfile)
+        {
+            using (var imageStream = new FileStream(jpgfile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                var image = iTextSharp.text.Image.GetInstance(imageStream);
+                if (image.Height > iTextSharp.text.PageSize.A4.Height - 25)
+                {
+                    image.ScaleToFit(iTextSharp.text.PageSize.A4.Width - 25, iTextSharp.text.PageSize.A4.Height - 25);
+                }
+                else if (image.Width > iTextSharp.text.PageSize.A4.Width - 25)
+                {
+                    image.ScaleToFit(iTextSharp.text.PageSize.A4.Width - 25, iTextSharp.text.PageSize.A4.Height - 25);
+                }
+                image.Alignment = iTextSharp.text.Image.ALIGN_MIDDLE;
+                document.Add(image);
+            }
         }
 
         private void RadDock1_ActiveWindowChanged(object sender, Telerik.WinControls.UI.Docking.DockWindowEventArgs e)
