@@ -28,14 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
-            Telerik.WinControls.UI.GridViewCheckBoxColumn gridViewCheckBoxColumn2 = new Telerik.WinControls.UI.GridViewCheckBoxColumn();
-            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn6 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
-            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn7 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
-            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn8 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
-            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn9 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
-            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn10 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
-            Telerik.WinControls.UI.GridViewImageColumn gridViewImageColumn2 = new Telerik.WinControls.UI.GridViewImageColumn();
-            Telerik.WinControls.UI.TableViewDefinition tableViewDefinition2 = new Telerik.WinControls.UI.TableViewDefinition();
+            Telerik.WinControls.UI.GridViewCheckBoxColumn gridViewCheckBoxColumn1 = new Telerik.WinControls.UI.GridViewCheckBoxColumn();
+            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn1 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn2 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn3 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn4 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn5 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.GridViewImageColumn gridViewImageColumn1 = new Telerik.WinControls.UI.GridViewImageColumn();
+            Telerik.WinControls.UI.TableViewDefinition tableViewDefinition1 = new Telerik.WinControls.UI.TableViewDefinition();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btn_startConvert = new Telerik.WinControls.UI.RadButton();
             this.radButton1 = new Telerik.WinControls.UI.RadButton();
@@ -50,18 +50,18 @@
             this.menu_addFile = new Telerik.WinControls.UI.RadMenuItem();
             this.radMenuItem1 = new Telerik.WinControls.UI.RadMenuItem();
             this.radDock1 = new Telerik.WinControls.UI.Docking.RadDock();
+            this.dtexceltopdf = new Telerik.WinControls.UI.Docking.DocumentWindow();
+            this.documentContainer2 = new Telerik.WinControls.UI.Docking.DocumentContainer();
+            this.documentTabStrip1 = new Telerik.WinControls.UI.Docking.DocumentTabStrip();
+            this.dtppttopdf = new Telerik.WinControls.UI.Docking.DocumentWindow();
+            this.dtwordtopdf = new Telerik.WinControls.UI.Docking.DocumentWindow();
+            this.dt_pdftoppt = new Telerik.WinControls.UI.Docking.DocumentWindow();
+            this.dt_pdftoexcel = new Telerik.WinControls.UI.Docking.DocumentWindow();
             this.dt_pdftoword = new Telerik.WinControls.UI.Docking.DocumentWindow();
             this.radGridView1 = new Telerik.WinControls.UI.RadGridView();
             this.radStatusStrip1 = new Telerik.WinControls.UI.RadStatusStrip();
             this.radCheckBoxElement1 = new Telerik.WinControls.UI.RadCheckBoxElement();
             this.radProgressBarElement1 = new Telerik.WinControls.UI.RadProgressBarElement();
-            this.documentContainer2 = new Telerik.WinControls.UI.Docking.DocumentContainer();
-            this.documentTabStrip1 = new Telerik.WinControls.UI.Docking.DocumentTabStrip();
-            this.dtexceltopdf = new Telerik.WinControls.UI.Docking.DocumentWindow();
-            this.dtppttopdf = new Telerik.WinControls.UI.Docking.DocumentWindow();
-            this.dtwordtopdf = new Telerik.WinControls.UI.Docking.DocumentWindow();
-            this.dt_pdftoppt = new Telerik.WinControls.UI.Docking.DocumentWindow();
-            this.dt_pdftoexcel = new Telerik.WinControls.UI.Docking.DocumentWindow();
             this.breezeTheme1 = new Telerik.WinControls.Themes.BreezeTheme();
             this.crystalTheme1 = new Telerik.WinControls.Themes.CrystalTheme();
             this.panel1.SuspendLayout();
@@ -71,14 +71,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.radMenu1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.radDock1)).BeginInit();
             this.radDock1.SuspendLayout();
-            this.dt_pdftoword.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.radGridView1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radGridView1.MasterTemplate)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radStatusStrip1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.documentContainer2)).BeginInit();
             this.documentContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.documentTabStrip1)).BeginInit();
             this.documentTabStrip1.SuspendLayout();
+            this.dt_pdftoword.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.radGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radGridView1.MasterTemplate)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radStatusStrip1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             this.SuspendLayout();
             // 
@@ -206,7 +206,7 @@
             // 
             // radDock1
             // 
-            this.radDock1.ActiveWindow = this.dtexceltopdf;
+            this.radDock1.ActiveWindow = this.dt_pdftoword;
             this.radDock1.Controls.Add(this.documentContainer2);
             this.radDock1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.radDock1.IsCleanUpTarget = true;
@@ -222,6 +222,83 @@
             this.radDock1.TabIndex = 4;
             this.radDock1.TabStop = false;
             this.radDock1.ThemeName = "Breeze";
+            // 
+            // dtexceltopdf
+            // 
+            this.dtexceltopdf.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.dtexceltopdf.Location = new System.Drawing.Point(5, 27);
+            this.dtexceltopdf.Name = "dtexceltopdf";
+            this.dtexceltopdf.PreviousDockState = Telerik.WinControls.UI.Docking.DockState.TabbedDocument;
+            this.dtexceltopdf.Size = new System.Drawing.Size(917, 379);
+            this.dtexceltopdf.Text = "EXCEL转PDF";
+            // 
+            // documentContainer2
+            // 
+            this.documentContainer2.Controls.Add(this.documentTabStrip1);
+            this.documentContainer2.Name = "documentContainer2";
+            // 
+            // 
+            // 
+            this.documentContainer2.RootElement.MinSize = new System.Drawing.Size(25, 25);
+            this.documentContainer2.SizeInfo.SizeMode = Telerik.WinControls.UI.Docking.SplitPanelSizeMode.Fill;
+            this.documentContainer2.ThemeName = "Breeze";
+            // 
+            // documentTabStrip1
+            // 
+            this.documentTabStrip1.CanUpdateChildIndex = true;
+            this.documentTabStrip1.Controls.Add(this.dtexceltopdf);
+            this.documentTabStrip1.Controls.Add(this.dtppttopdf);
+            this.documentTabStrip1.Controls.Add(this.dtwordtopdf);
+            this.documentTabStrip1.Controls.Add(this.dt_pdftoppt);
+            this.documentTabStrip1.Controls.Add(this.dt_pdftoexcel);
+            this.documentTabStrip1.Controls.Add(this.dt_pdftoword);
+            this.documentTabStrip1.Location = new System.Drawing.Point(0, 0);
+            this.documentTabStrip1.Name = "documentTabStrip1";
+            // 
+            // 
+            // 
+            this.documentTabStrip1.RootElement.MinSize = new System.Drawing.Size(25, 25);
+            this.documentTabStrip1.SelectedIndex = 5;
+            this.documentTabStrip1.Size = new System.Drawing.Size(927, 411);
+            this.documentTabStrip1.TabIndex = 0;
+            this.documentTabStrip1.TabStop = false;
+            this.documentTabStrip1.ThemeName = "Breeze";
+            // 
+            // dtppttopdf
+            // 
+            this.dtppttopdf.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.dtppttopdf.Location = new System.Drawing.Point(5, 27);
+            this.dtppttopdf.Name = "dtppttopdf";
+            this.dtppttopdf.PreviousDockState = Telerik.WinControls.UI.Docking.DockState.TabbedDocument;
+            this.dtppttopdf.Size = new System.Drawing.Size(917, 379);
+            this.dtppttopdf.Text = "PPT转PDF";
+            // 
+            // dtwordtopdf
+            // 
+            this.dtwordtopdf.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.dtwordtopdf.Location = new System.Drawing.Point(5, 27);
+            this.dtwordtopdf.Name = "dtwordtopdf";
+            this.dtwordtopdf.PreviousDockState = Telerik.WinControls.UI.Docking.DockState.TabbedDocument;
+            this.dtwordtopdf.Size = new System.Drawing.Size(917, 379);
+            this.dtwordtopdf.Text = "Word转PDF";
+            // 
+            // dt_pdftoppt
+            // 
+            this.dt_pdftoppt.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.dt_pdftoppt.Location = new System.Drawing.Point(5, 27);
+            this.dt_pdftoppt.Name = "dt_pdftoppt";
+            this.dt_pdftoppt.PreviousDockState = Telerik.WinControls.UI.Docking.DockState.TabbedDocument;
+            this.dt_pdftoppt.Size = new System.Drawing.Size(917, 379);
+            this.dt_pdftoppt.Text = "PDF转PPT";
+            // 
+            // dt_pdftoexcel
+            // 
+            this.dt_pdftoexcel.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.dt_pdftoexcel.Location = new System.Drawing.Point(5, 27);
+            this.dt_pdftoexcel.Name = "dt_pdftoexcel";
+            this.dt_pdftoexcel.PreviousDockState = Telerik.WinControls.UI.Docking.DockState.TabbedDocument;
+            this.dt_pdftoexcel.Size = new System.Drawing.Size(917, 379);
+            this.dt_pdftoexcel.Text = "PDF转Excel";
             // 
             // dt_pdftoword
             // 
@@ -246,37 +323,37 @@
             // 
             // 
             // 
-            gridViewCheckBoxColumn2.EnableExpressionEditor = false;
-            gridViewCheckBoxColumn2.HeaderText = "选择";
-            gridViewCheckBoxColumn2.MinWidth = 20;
-            gridViewCheckBoxColumn2.Name = "columnCheck";
-            gridViewTextBoxColumn6.EnableExpressionEditor = false;
-            gridViewTextBoxColumn6.HeaderText = "文件名";
-            gridViewTextBoxColumn6.Name = "columnFilaName";
-            gridViewTextBoxColumn7.EnableExpressionEditor = false;
-            gridViewTextBoxColumn7.HeaderText = "总页数";
-            gridViewTextBoxColumn7.Name = "columnTotalPage";
-            gridViewTextBoxColumn8.EnableExpressionEditor = false;
-            gridViewTextBoxColumn8.HeaderText = "操作起始页";
-            gridViewTextBoxColumn8.Name = "columnStartPage";
-            gridViewTextBoxColumn9.EnableExpressionEditor = false;
-            gridViewTextBoxColumn9.HeaderText = "操作结束页";
-            gridViewTextBoxColumn9.Name = "columnEndPage";
-            gridViewTextBoxColumn10.EnableExpressionEditor = false;
-            gridViewTextBoxColumn10.HeaderText = "状态";
-            gridViewTextBoxColumn10.Name = "columnStatus";
-            gridViewImageColumn2.EnableExpressionEditor = false;
-            gridViewImageColumn2.HeaderText = "操作";
-            gridViewImageColumn2.Name = "columnDelete";
+            gridViewCheckBoxColumn1.EnableExpressionEditor = false;
+            gridViewCheckBoxColumn1.HeaderText = "选择";
+            gridViewCheckBoxColumn1.MinWidth = 20;
+            gridViewCheckBoxColumn1.Name = "columnCheck";
+            gridViewTextBoxColumn1.EnableExpressionEditor = false;
+            gridViewTextBoxColumn1.HeaderText = "文件名";
+            gridViewTextBoxColumn1.Name = "columnFilaName";
+            gridViewTextBoxColumn2.EnableExpressionEditor = false;
+            gridViewTextBoxColumn2.HeaderText = "总页数";
+            gridViewTextBoxColumn2.Name = "columnTotalPage";
+            gridViewTextBoxColumn3.EnableExpressionEditor = false;
+            gridViewTextBoxColumn3.HeaderText = "操作起始页";
+            gridViewTextBoxColumn3.Name = "columnStartPage";
+            gridViewTextBoxColumn4.EnableExpressionEditor = false;
+            gridViewTextBoxColumn4.HeaderText = "操作结束页";
+            gridViewTextBoxColumn4.Name = "columnEndPage";
+            gridViewTextBoxColumn5.EnableExpressionEditor = false;
+            gridViewTextBoxColumn5.HeaderText = "状态";
+            gridViewTextBoxColumn5.Name = "columnStatus";
+            gridViewImageColumn1.EnableExpressionEditor = false;
+            gridViewImageColumn1.HeaderText = "操作";
+            gridViewImageColumn1.Name = "columnDelete";
             this.radGridView1.MasterTemplate.Columns.AddRange(new Telerik.WinControls.UI.GridViewDataColumn[] {
-            gridViewCheckBoxColumn2,
-            gridViewTextBoxColumn6,
-            gridViewTextBoxColumn7,
-            gridViewTextBoxColumn8,
-            gridViewTextBoxColumn9,
-            gridViewTextBoxColumn10,
-            gridViewImageColumn2});
-            this.radGridView1.MasterTemplate.ViewDefinition = tableViewDefinition2;
+            gridViewCheckBoxColumn1,
+            gridViewTextBoxColumn1,
+            gridViewTextBoxColumn2,
+            gridViewTextBoxColumn3,
+            gridViewTextBoxColumn4,
+            gridViewTextBoxColumn5,
+            gridViewImageColumn1});
+            this.radGridView1.MasterTemplate.ViewDefinition = tableViewDefinition1;
             this.radGridView1.Name = "radGridView1";
             this.radGridView1.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.radGridView1.Size = new System.Drawing.Size(917, 355);
@@ -319,83 +396,6 @@
             this.radProgressBarElement1.SweepAngle = 90;
             this.radProgressBarElement1.Text = "";
             // 
-            // documentContainer2
-            // 
-            this.documentContainer2.Controls.Add(this.documentTabStrip1);
-            this.documentContainer2.Name = "documentContainer2";
-            // 
-            // 
-            // 
-            this.documentContainer2.RootElement.MinSize = new System.Drawing.Size(25, 25);
-            this.documentContainer2.SizeInfo.SizeMode = Telerik.WinControls.UI.Docking.SplitPanelSizeMode.Fill;
-            this.documentContainer2.ThemeName = "Breeze";
-            // 
-            // documentTabStrip1
-            // 
-            this.documentTabStrip1.CanUpdateChildIndex = true;
-            this.documentTabStrip1.Controls.Add(this.dtexceltopdf);
-            this.documentTabStrip1.Controls.Add(this.dtppttopdf);
-            this.documentTabStrip1.Controls.Add(this.dtwordtopdf);
-            this.documentTabStrip1.Controls.Add(this.dt_pdftoppt);
-            this.documentTabStrip1.Controls.Add(this.dt_pdftoexcel);
-            this.documentTabStrip1.Controls.Add(this.dt_pdftoword);
-            this.documentTabStrip1.Location = new System.Drawing.Point(0, 0);
-            this.documentTabStrip1.Name = "documentTabStrip1";
-            // 
-            // 
-            // 
-            this.documentTabStrip1.RootElement.MinSize = new System.Drawing.Size(25, 25);
-            this.documentTabStrip1.SelectedIndex = 0;
-            this.documentTabStrip1.Size = new System.Drawing.Size(927, 411);
-            this.documentTabStrip1.TabIndex = 0;
-            this.documentTabStrip1.TabStop = false;
-            this.documentTabStrip1.ThemeName = "Breeze";
-            // 
-            // dtexceltopdf
-            // 
-            this.dtexceltopdf.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.dtexceltopdf.Location = new System.Drawing.Point(5, 27);
-            this.dtexceltopdf.Name = "dtexceltopdf";
-            this.dtexceltopdf.PreviousDockState = Telerik.WinControls.UI.Docking.DockState.TabbedDocument;
-            this.dtexceltopdf.Size = new System.Drawing.Size(917, 379);
-            this.dtexceltopdf.Text = "EXCEL转PDF";
-            // 
-            // dtppttopdf
-            // 
-            this.dtppttopdf.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.dtppttopdf.Location = new System.Drawing.Point(5, 27);
-            this.dtppttopdf.Name = "dtppttopdf";
-            this.dtppttopdf.PreviousDockState = Telerik.WinControls.UI.Docking.DockState.TabbedDocument;
-            this.dtppttopdf.Size = new System.Drawing.Size(917, 379);
-            this.dtppttopdf.Text = "PPT转PDF";
-            // 
-            // dtwordtopdf
-            // 
-            this.dtwordtopdf.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.dtwordtopdf.Location = new System.Drawing.Point(5, 27);
-            this.dtwordtopdf.Name = "dtwordtopdf";
-            this.dtwordtopdf.PreviousDockState = Telerik.WinControls.UI.Docking.DockState.TabbedDocument;
-            this.dtwordtopdf.Size = new System.Drawing.Size(917, 379);
-            this.dtwordtopdf.Text = "Word转PDF";
-            // 
-            // dt_pdftoppt
-            // 
-            this.dt_pdftoppt.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.dt_pdftoppt.Location = new System.Drawing.Point(5, 27);
-            this.dt_pdftoppt.Name = "dt_pdftoppt";
-            this.dt_pdftoppt.PreviousDockState = Telerik.WinControls.UI.Docking.DockState.TabbedDocument;
-            this.dt_pdftoppt.Size = new System.Drawing.Size(917, 379);
-            this.dt_pdftoppt.Text = "PDF转PPT";
-            // 
-            // dt_pdftoexcel
-            // 
-            this.dt_pdftoexcel.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.dt_pdftoexcel.Location = new System.Drawing.Point(5, 27);
-            this.dt_pdftoexcel.Name = "dt_pdftoexcel";
-            this.dt_pdftoexcel.PreviousDockState = Telerik.WinControls.UI.Docking.DockState.TabbedDocument;
-            this.dt_pdftoexcel.Size = new System.Drawing.Size(917, 379);
-            this.dt_pdftoexcel.Text = "PDF转Excel";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -420,15 +420,15 @@
             ((System.ComponentModel.ISupportInitialize)(this.radMenu1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.radDock1)).EndInit();
             this.radDock1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.documentContainer2)).EndInit();
+            this.documentContainer2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.documentTabStrip1)).EndInit();
+            this.documentTabStrip1.ResumeLayout(false);
             this.dt_pdftoword.ResumeLayout(false);
             this.dt_pdftoword.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.radGridView1.MasterTemplate)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.radGridView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.radStatusStrip1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.documentContainer2)).EndInit();
-            this.documentContainer2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.documentTabStrip1)).EndInit();
-            this.documentTabStrip1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

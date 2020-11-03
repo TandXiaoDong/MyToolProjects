@@ -138,7 +138,7 @@ namespace RC_InterfaceService
             session.Send(funTools.getJsonFromHashtable(null, "1", "连接成功！"));
         }
 
-        private void NewDataReceived(object sender, SerialDataReceivedEventArgs e)
+        private void NewDataReceived2(object sender, SerialDataReceivedEventArgs e)
         {
             var data = CodecontxtData.Port.ReadExisting();
             funTools.Log("data：" + data);
@@ -170,29 +170,17 @@ namespace RC_InterfaceService
             }
         }
 
-        private void NewDataReceived2(object sender, SerialDataReceivedEventArgs e)
+        private void NewDataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             var data = CodecontxtData.Port.ReadExisting();
             if (data.Length <= 0)
                 return;
-            byte[] revBuffer = new byte[CodecontxtData.Port.BytesToRead];
-            CodecontxtData.Port.Read(revBuffer, 0, revBuffer.Length);
+            byte[] revBuffer = Encoding.ASCII.GetBytes(data);
             //完整数据 02 + data(8) + crc + 03
             //data:数据类型1 + 测量值6 + 操作类型标志1
-            funTools.Log("revData："+ BitConverter.ToString(revBuffer));
+            funTools.Log($"dataStr={data}|databyte={BitConverter.ToString(revBuffer)}");
             this.revDataBuffer.AddRange(revBuffer);
             ProcessRevData(this.revDataBuffer.ToArray());
-        }
-
-        private byte[] ConvertStr2Byte(string data)
-        {
-            byte[] buffer = new byte[data.Length / 2];
-            int j = 0;
-            for (int i = 0; i < data.Length; i += 2)
-            {
-                buffer[j] = Convert.ToInt32(data[i], 10);
-                j++;
-            }
         }
 
         private void ProcessRevData(byte[] buffer)
@@ -201,6 +189,9 @@ namespace RC_InterfaceService
             {
                 if (buffer.Length < this.revDataLen)
                     return;
+                if (!CheckStartFlag(buffer))
+                    return;
+                buffer = this.revDataBuffer.ToArray();
                 if (buffer[0] != 0x02 && buffer[10] != 0x03)
                     return;
                 byte[] data = new byte[this.revDataLen];
@@ -210,7 +201,7 @@ namespace RC_InterfaceService
                 //转发数据
                 var sessions = appServer.GetSessions(b => true);
                 Hashtable ht = new Hashtable();
-                ht.Add("data", data);
+                ht.Add("data", Encoding.ASCII.GetString(data));
                 foreach (var ss in sessions)
                 {
                     ss.Send(funTools.getJsonFromHashtable(ht, "1", "数据获取成功"));
@@ -220,6 +211,22 @@ namespace RC_InterfaceService
                 {
                     ProcessRevData(this.revDataBuffer.ToArray());
                 }
+            }
+        }
+
+        private bool CheckStartFlag(byte[] buffer)
+        {
+            if (buffer.Length <= 0)
+                return false;
+
+            if (buffer[0] != 0x02)
+            {
+                this.revDataBuffer.RemoveRange(0, 1);
+                return CheckStartFlag(this.revDataBuffer.ToArray());
+            }
+            else
+            {
+                return true;
             }
         }
 
