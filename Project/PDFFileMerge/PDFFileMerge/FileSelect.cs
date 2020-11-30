@@ -73,6 +73,7 @@ namespace PDFFileMerge.FileHelper
                 fileProperty.FileNames = openFileDialog1.FileNames;
                 fileProperty.FileSafeNames = openFileDialog1.SafeFileNames;
                 fileProperty.FileFilterIndex = 1;
+                var files = openFileDialog1.FileNames;
                 fileProperty.OpenFileResult = openFileDialog1;
                 return fileProperty;
             }
