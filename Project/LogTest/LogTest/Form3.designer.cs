@@ -1,4 +1,4 @@
-﻿namespace IncaAPITest
+﻿namespace LogTest
 {
     partial class Form3
     {
