@@ -21,7 +21,9 @@ namespace PDFFileMerge
         private string currentSelectFilePath;
         private string exportImageDirPath;
         private string exportFileDirPath;
-        private object obj = new object();
+        private string sameSelectFile1Path;
+        private string sameSelectFile2Path;
+        private string sameOutputDirPath;
 
         public Form1()
         {
@@ -64,6 +66,99 @@ namespace PDFFileMerge
             this.check_fileOrdr.CheckedChanged += Check_fileOrdr_CheckedChanged;
             this.check_fileReOrder.CheckedChanged += Check_fileReOrder_CheckedChanged;
             #endregion
+
+            #region merge same file
+            this.btn_sameFile1.Click += Btn_sameFile1_Click;
+            this.btn_sameFile2.Click += Btn_sameFile2_Click;
+            this.btn_sameSavePath.Click += Btn_sameSavePath_Click;
+            this.btn_sameMerge.Click += Btn_sameMerge_Click;
+            this.btn_sameOpenOutputDir.Click += Btn_sameOpenOutputDir_Click;
+
+            #endregion
+        }
+
+        private void Btn_sameSavePath_Click(object sender, EventArgs e)
+        {
+            this.sameOutputDirPath = FileSelect.GetDirectorPath();
+            this.lbx_sameOutputDir.Text = this.sameOutputDirPath;
+        }
+
+        private void Btn_sameOpenOutputDir_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(this.sameOutputDirPath))
+            {
+                MessageBox.Show("当前路径为空！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            System.Diagnostics.Process.Start(this.sameOutputDirPath);
+        }
+
+        private void Btn_sameMerge_Click(object sender, EventArgs e)
+        {
+            MergeSameFile(this.sameSelectFile1Path, this.sameSelectFile2Path);
+        }
+
+        private void MergeSameFile(string file1, string file2)
+        {
+            int fileType = 1;
+            if (this.check_img.Checked)
+                fileType = 0;
+            else if (this.check_pdf.Checked)
+                fileType = 1;
+            var filePathList1 = ReadFile2List(file1, fileType);
+            var filePathList2 = ReadFile2List(file2, fileType);
+            if (filePathList1.Count <= 0)
+            {
+                MessageBox.Show("文件夹1下没有可以合并的PDF文件！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (filePathList2.Count <= 0)
+            {
+                MessageBox.Show("文件夹2下没有可以合并的PDF文件！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            foreach (var f1 in filePathList1)
+            {
+                List<string> list = new List<string>();
+                foreach (var f2 in filePathList2)
+                {
+                    if (Path.GetFileName(f1) == Path.GetFileName(f2))
+                    {
+                        list.Add(f1);
+                        list.Add(f2);
+                    }
+                }
+                if (list.Count <= 0)
+                    continue;
+                //start merge both same file
+
+                var outputPdfFile = this.sameOutputDirPath + "\\" + Path.GetFileName(f1) + ".pdf";
+                this.btn_sameMerge.Enabled = false;
+                Task.Run(new Action(() =>
+                {
+                    if (fileType == 1)
+                    {
+                        MergePDF(list.ToArray(), outputPdfFile);
+                    }
+                    else if (fileType == 0)
+                    {
+                        Convert2JPG2PDF(outputPdfFile, list.ToArray());
+                    }
+                })).Wait();
+                this.btn_sameMerge.Enabled = true;
+            }
+        }
+
+        private void Btn_sameFile2_Click(object sender, EventArgs e)
+        {
+            this.sameSelectFile2Path = FileSelect.GetDirectorPath();
+            this.lbx_sameFile2.Text = this.sameSelectFile2Path;
+        }
+
+        private void Btn_sameFile1_Click(object sender, EventArgs e)
+        {
+            this.sameSelectFile1Path = FileSelect.GetDirectorPath();
+            this.lbx_sameFile1.Text = this.sameSelectFile1Path;
         }
 
         private void Check_imgReOrder_CheckedChanged(object sender, EventArgs e)
@@ -115,10 +210,16 @@ namespace PDFFileMerge
                 MessageBox.Show("保存路径不能为空！请重新合并后的文件路径！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            int pdfCount = (int)this.num_pdfFileNum.Value;
+            if (pdfCount <= 1)
+            {
+                MessageBox.Show("要合并的文件数量应大于1！请重新设置！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             this.btn_FileMerge.Enabled = false;
             Task.Run(new Action(()=>
             {
-                MergePDFFile(this.currentSelectFilePath, this.exportFileDirPath);
+                MergePDFFile(this.currentSelectFilePath, this.exportFileDirPath, pdfCount);
             })).Wait();
             this.btn_FileMerge.Enabled = true;
         }
@@ -129,7 +230,7 @@ namespace PDFFileMerge
             this.lbx_exportPathFile.Text = this.exportFileDirPath;
         }
 
-        private void MergePDFFile(string sourceFilePath, string outPutPath)
+        private void MergePDFFile(string sourceFilePath, string outPutPath, int pdfCount)
         {
             var filePathList = ReadFile2List(sourceFilePath, 1);
             if (filePathList.Count <= 0)
@@ -141,10 +242,19 @@ namespace PDFFileMerge
             if (mergeFileName == "")
                 mergeFileName = "00001";
             int mergeIndex = GetFileNameLastChar(mergeFileName);
-            
-            for (int i = 0; i < filePathList.Count; i += 2)
+            for (int i = 0; i < filePathList.Count;)
             {
-                string[] files = new string[] { filePathList[i], filePathList[i + 1]};
+                string[] files = new string[pdfCount];//{ filePathList[i], filePathList[i + 1]};
+                for (int j = 0; j < pdfCount; j++)
+                {
+                    if (i >= filePathList.Count)
+                    {
+                        MessageBox.Show($"当前文件数量不满足设定文件数量{pdfCount}！请调整设定数量或文件！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    files[j] = filePathList[i];
+                    i++;
+                }
                 MergePDF(files, outPutPath + "\\" + mergeFileName + ".pdf");
                 var oldMergeIndex = mergeIndex;
                 if (this.check_fileOrdr.Checked)
@@ -240,10 +350,16 @@ namespace PDFFileMerge
                 MessageBox.Show("保存路径不能为空！请重新合并后的文件路径！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            int pdfCount = (int)this.num_pdfImgNum.Value;
+            if (pdfCount <= 1)
+            {
+                MessageBox.Show("要合并的文件数量应大于1！请重新设置！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             this.btn_imgMerge.Enabled = false;
             Task.Run(new Action(()=>
             {
-                ConvertMulJPG2PDF(this.currentSelectImagePath, this.exportImageDirPath);
+                ConvertMulJPG2PDF(this.currentSelectImagePath, this.exportImageDirPath, pdfCount);
             })).Wait();
             this.btn_imgMerge.Enabled = true;
         }
@@ -254,7 +370,7 @@ namespace PDFFileMerge
             this.lbx_exportPathImg.Text = this.exportImageDirPath;
         }
 
-        private void ConvertMulJPG2PDF(string sourceImgPath, string targePdfFile)
+        private void ConvertMulJPG2PDF(string sourceImgPath, string targePdfFile, int pdfCount)
         {
             var list = ReadFile2List(sourceImgPath, 0);
             if (list.Count <= 0)
@@ -266,9 +382,20 @@ namespace PDFFileMerge
             if (mergeFileName == "")
                 mergeFileName = "00001";
             int mergeIndex = GetFileNameLastChar(mergeFileName);
-            for (int i = 0; i < list.Count; i += 2)
+            for (int i = 0; i < list.Count;)
             {
-                Convert2JPG2PDF(targePdfFile + "\\" + mergeFileName + ".pdf", list[i], list[i + 1]);
+                string[] imgFiles = new string[pdfCount];
+                for (int j = 0; j < pdfCount; j++)
+                {
+                    if (i >= list.Count)
+                    {
+                        MessageBox.Show($"当前图片数量不满足设定文件数量{pdfCount}！请调整设定数量或文件！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    imgFiles[j] = list[i];
+                    i++;
+                }
+                Convert2JPG2PDF(targePdfFile + "\\" + mergeFileName + ".pdf", imgFiles);
                 var oldMergeIndex = mergeIndex;
                 if (this.check_imgOrder.Checked)
                 {
@@ -303,7 +430,8 @@ namespace PDFFileMerge
             {
                 if (fileType == 0)//image
                 {
-                    if (file.Extension.ToLower() == ".jpg")
+                    var extenFile = file.Extension.ToLower();
+                    if (extenFile == ".jpg" || extenFile == ".png" || extenFile == ".jpeg")
                     {
                         list.Add(file.FullName);
                     }
@@ -316,7 +444,6 @@ namespace PDFFileMerge
                     }
                 }
             }
-
             return list;
         }
 
@@ -358,15 +485,18 @@ namespace PDFFileMerge
             return res;
         }
 
-        private void Convert2JPG2PDF(string targePdfFile, string imgFile1, string imgFile2)
+        private void Convert2JPG2PDF(string targePdfFile, string[] imgFiles)
         {
             iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A4, 25, 25, 25, 25);
             using (var stream = new FileStream(targePdfFile, FileMode.Create))
             {
                 PdfWriter.GetInstance(document, stream);
                 document.Open();
-                AddImgToPDFDocument(imgFile1, document);
-                AddImgToPDFDocument(imgFile2, document);
+                foreach (var imgFile in imgFiles)
+                {
+                    //AddImgToPDFDocument(imgFile1, document);
+                    AddImgToPDFDocument(imgFile, document);
+                }
                 document.Close();
             }
         }
@@ -390,10 +520,5 @@ namespace PDFFileMerge
         }
 
         #endregion
-
-        private void button6_Click(object sender, EventArgs e)
-        {
-            FileSelect.GetSelectFileContent("(*.*)|*.*", "选择文件");
-        }
     }
 }
