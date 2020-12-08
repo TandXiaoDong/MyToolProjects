@@ -24,6 +24,7 @@ namespace PDFFileMerge
         private string sameSelectFile1Path;
         private string sameSelectFile2Path;
         private string sameOutputDirPath;
+        private string dragOutpuDirpath;
 
         public Form1()
         {
@@ -33,6 +34,7 @@ namespace PDFFileMerge
         private void Form1_Load(object sender, EventArgs e)
         {
             //UnionPDF();
+            this.tb_dragText.AllowDrop = true;
             EventHandlers();
         }
 
@@ -73,8 +75,102 @@ namespace PDFFileMerge
             this.btn_sameSavePath.Click += Btn_sameSavePath_Click;
             this.btn_sameMerge.Click += Btn_sameMerge_Click;
             this.btn_sameOpenOutputDir.Click += Btn_sameOpenOutputDir_Click;
-
             #endregion
+
+            #region drag merge file 
+            this.btn_dragMerge.Click += Btn_dragMerge_Click;
+            this.btn_dragSetPath.Click += Btn_dragSetPath_Click;
+            this.tb_dragText.DragEnter += Tb_dragText_DragEnter;
+            this.tb_dragText.DragDrop += Tb_dragText_DragDrop;
+            this.btn_dragClear.Click += Btn_dragClear_Click;
+            this.btn_dragOpenDir.Click += Btn_dragOpenDir_Click;
+            #endregion
+        }
+
+        private void Btn_dragOpenDir_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(this.dragOutpuDirpath))
+            {
+                MessageBox.Show("当前路径为空！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            System.Diagnostics.Process.Start(this.dragOutpuDirpath);
+        }
+
+        private void Btn_dragClear_Click(object sender, EventArgs e)
+        {
+            this.tb_dragText.Clear();
+        }
+
+        private void Tb_dragText_DragDrop(object sender, DragEventArgs e)
+        {
+            this.tb_dragText.Text += ((System.Array)e.Data.GetData(DataFormats.FileDrop)).GetValue(0).ToString() + "\r\n";
+        }
+
+        private void Tb_dragText_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.Link;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+        }
+
+        private void Btn_dragSetPath_Click(object sender, EventArgs e)
+        {
+            this.dragOutpuDirpath = FileSelect.GetDirectorPath();
+            this.lbx_dragSavePath.Text = this.dragOutpuDirpath;
+        }
+
+        private void Btn_dragMerge_Click(object sender, EventArgs e)
+        {
+            int fileType = 1;
+            if (this.check_dragImg.Checked)
+                fileType = 0;
+            else if (this.check_dragFile.Checked)
+                fileType = 1;
+
+            var mergeFile = this.tb_dragMergeName.Text.Trim();
+            var exten = Path.GetExtension(mergeFile).ToLower();
+            if (exten == "")
+                mergeFile = mergeFile + ".pdf";
+            else if (exten != ".pdf")
+            {
+                MessageBox.Show("文件命名扩展名不支持！命名规范（*.pdf）", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            var outputPdfFile = this.dragOutpuDirpath + "\\" + mergeFile;
+            List<string> list = this.tb_dragText.Lines.Cast<string>().ToList();
+            
+            if (list.Count <= 0)
+            {
+                MessageBox.Show("没有可以合并的文件！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (string.IsNullOrEmpty(this.dragOutpuDirpath))
+            {
+                MessageBox.Show("未设置要保存的路径！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            list.RemoveAt(this.tb_dragText.Lines.Length - 1);
+
+            this.btn_dragMerge.Enabled = false;
+
+            Task.Run(new Action(() =>
+            {
+                if (fileType == 1)
+                {
+                    MergePDF(list.ToArray(), outputPdfFile);
+                }
+                else if (fileType == 0)
+                {
+                    Convert2JPG2PDF(outputPdfFile, list.ToArray());
+                }
+            })).Wait();
+            this.btn_dragMerge.Enabled = true;
         }
 
         private void Btn_sameSavePath_Click(object sender, EventArgs e)
@@ -315,8 +411,15 @@ namespace PDFFileMerge
 
         private void MergePDF(string[] files, string outPutPath)
         {
-            Spire.Pdf.PdfDocumentBase doc = Spire.Pdf.PdfDocument.MergeFiles(files);
-            doc.Save(outPutPath, FileFormat.PDF);
+            try
+            {
+                Spire.Pdf.PdfDocumentBase doc = Spire.Pdf.PdfDocument.MergeFiles(files);
+                doc.Save(outPutPath, FileFormat.PDF);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("转换失败！请检查要合并的文件是否是PDF文件！" + ex.Message, "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         #endregion
@@ -487,17 +590,24 @@ namespace PDFFileMerge
 
         private void Convert2JPG2PDF(string targePdfFile, string[] imgFiles)
         {
-            iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A4, 25, 25, 25, 25);
-            using (var stream = new FileStream(targePdfFile, FileMode.Create))
+            try
             {
-                PdfWriter.GetInstance(document, stream);
-                document.Open();
-                foreach (var imgFile in imgFiles)
+                iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A4, 25, 25, 25, 25);
+                using (var stream = new FileStream(targePdfFile, FileMode.Create))
                 {
-                    //AddImgToPDFDocument(imgFile1, document);
-                    AddImgToPDFDocument(imgFile, document);
+                    PdfWriter.GetInstance(document, stream);
+                    document.Open();
+                    foreach (var imgFile in imgFiles)
+                    {
+                        //AddImgToPDFDocument(imgFile1, document);
+                        AddImgToPDFDocument(imgFile, document);
+                    }
+                    document.Close();
                 }
-                document.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("转换失败！请检查要合并的文件是否是图片格式！" + ex.Message, "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

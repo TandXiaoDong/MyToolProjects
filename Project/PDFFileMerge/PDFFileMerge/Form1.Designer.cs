@@ -36,6 +36,8 @@
             this.btn_sameSavePath = new System.Windows.Forms.Button();
             this.lbx_sameOutputDir = new System.Windows.Forms.Label();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.check_pdf = new System.Windows.Forms.RadioButton();
+            this.check_img = new System.Windows.Forms.RadioButton();
             this.btn_sameFile2 = new System.Windows.Forms.Button();
             this.lbx_sameFile2 = new System.Windows.Forms.Label();
             this.btn_sameFile1 = new System.Windows.Forms.Button();
@@ -75,8 +77,20 @@
             this.lbx_selectImg = new System.Windows.Forms.Label();
             this.btn_imgMerge = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.check_img = new System.Windows.Forms.RadioButton();
-            this.check_pdf = new System.Windows.Forms.RadioButton();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.tb_dragText = new System.Windows.Forms.TextBox();
+            this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.btn_dragSetPath = new System.Windows.Forms.Button();
+            this.lbx_dragSavePath = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.tb_dragMergeName = new System.Windows.Forms.TextBox();
+            this.btn_dragClear = new System.Windows.Forms.Button();
+            this.btn_dragMerge = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.check_dragFile = new System.Windows.Forms.RadioButton();
+            this.check_dragImg = new System.Windows.Forms.RadioButton();
+            this.label7 = new System.Windows.Forms.Label();
+            this.btn_dragOpenDir = new System.Windows.Forms.Button();
             this.tabPage1.SuspendLayout();
             this.groupBox8.SuspendLayout();
             this.groupBox7.SuspendLayout();
@@ -91,6 +105,8 @@
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_pdfImgNum)).BeginInit();
             this.tabControl1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
+            this.groupBox9.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabPage1
@@ -172,6 +188,28 @@
             this.groupBox7.TabIndex = 9;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "选择要合并的PDF文件夹";
+            // 
+            // check_pdf
+            // 
+            this.check_pdf.AutoSize = true;
+            this.check_pdf.Checked = true;
+            this.check_pdf.Location = new System.Drawing.Point(97, 46);
+            this.check_pdf.Name = "check_pdf";
+            this.check_pdf.Size = new System.Drawing.Size(65, 16);
+            this.check_pdf.TabIndex = 9;
+            this.check_pdf.TabStop = true;
+            this.check_pdf.Text = "pdf文件";
+            this.check_pdf.UseVisualStyleBackColor = true;
+            // 
+            // check_img
+            // 
+            this.check_img.AutoSize = true;
+            this.check_img.Location = new System.Drawing.Point(20, 46);
+            this.check_img.Name = "check_img";
+            this.check_img.Size = new System.Drawing.Size(47, 16);
+            this.check_img.TabIndex = 8;
+            this.check_img.Text = "图片";
+            this.check_img.UseVisualStyleBackColor = true;
             // 
             // btn_sameFile2
             // 
@@ -584,6 +622,7 @@
             this.tabControl1.Controls.Add(this.tab_Image);
             this.tabControl1.Controls.Add(this.tab_File);
             this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
@@ -592,27 +631,149 @@
             this.tabControl1.Size = new System.Drawing.Size(636, 398);
             this.tabControl1.TabIndex = 4;
             // 
-            // check_img
+            // tabPage2
             // 
-            this.check_img.AutoSize = true;
-            this.check_img.Location = new System.Drawing.Point(20, 46);
-            this.check_img.Name = "check_img";
-            this.check_img.Size = new System.Drawing.Size(47, 16);
-            this.check_img.TabIndex = 8;
-            this.check_img.Text = "图片";
-            this.check_img.UseVisualStyleBackColor = true;
+            this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage2.Controls.Add(this.btn_dragOpenDir);
+            this.tabPage2.Controls.Add(this.check_dragFile);
+            this.tabPage2.Controls.Add(this.check_dragImg);
+            this.tabPage2.Controls.Add(this.tb_dragText);
+            this.tabPage2.Controls.Add(this.groupBox9);
+            this.tabPage2.Controls.Add(this.btn_dragClear);
+            this.tabPage2.Controls.Add(this.btn_dragMerge);
+            this.tabPage2.Controls.Add(this.label3);
+            this.tabPage2.Location = new System.Drawing.Point(4, 24);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(628, 370);
+            this.tabPage2.TabIndex = 3;
+            this.tabPage2.Text = "拖拽合并";
             // 
-            // check_pdf
+            // tb_dragText
             // 
-            this.check_pdf.AutoSize = true;
-            this.check_pdf.Checked = true;
-            this.check_pdf.Location = new System.Drawing.Point(97, 46);
-            this.check_pdf.Name = "check_pdf";
-            this.check_pdf.Size = new System.Drawing.Size(65, 16);
-            this.check_pdf.TabIndex = 9;
-            this.check_pdf.TabStop = true;
-            this.check_pdf.Text = "pdf文件";
-            this.check_pdf.UseVisualStyleBackColor = true;
+            this.tb_dragText.Location = new System.Drawing.Point(19, 39);
+            this.tb_dragText.Multiline = true;
+            this.tb_dragText.Name = "tb_dragText";
+            this.tb_dragText.ReadOnly = true;
+            this.tb_dragText.Size = new System.Drawing.Size(601, 188);
+            this.tb_dragText.TabIndex = 12;
+            // 
+            // groupBox9
+            // 
+            this.groupBox9.Controls.Add(this.label7);
+            this.groupBox9.Controls.Add(this.btn_dragSetPath);
+            this.groupBox9.Controls.Add(this.lbx_dragSavePath);
+            this.groupBox9.Controls.Add(this.label4);
+            this.groupBox9.Controls.Add(this.tb_dragMergeName);
+            this.groupBox9.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.groupBox9.Location = new System.Drawing.Point(11, 233);
+            this.groupBox9.Name = "groupBox9";
+            this.groupBox9.Size = new System.Drawing.Size(609, 91);
+            this.groupBox9.TabIndex = 11;
+            this.groupBox9.TabStop = false;
+            this.groupBox9.Text = "设置合并后的路径";
+            // 
+            // btn_dragSetPath
+            // 
+            this.btn_dragSetPath.Location = new System.Drawing.Point(47, 58);
+            this.btn_dragSetPath.Name = "btn_dragSetPath";
+            this.btn_dragSetPath.Size = new System.Drawing.Size(61, 23);
+            this.btn_dragSetPath.TabIndex = 7;
+            this.btn_dragSetPath.Text = "保存路径";
+            this.btn_dragSetPath.UseVisualStyleBackColor = true;
+            // 
+            // lbx_dragSavePath
+            // 
+            this.lbx_dragSavePath.AutoSize = true;
+            this.lbx_dragSavePath.Location = new System.Drawing.Point(121, 69);
+            this.lbx_dragSavePath.Name = "lbx_dragSavePath";
+            this.lbx_dragSavePath.Size = new System.Drawing.Size(41, 12);
+            this.lbx_dragSavePath.TabIndex = 6;
+            this.lbx_dragSavePath.Text = "label4";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(16, 28);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(101, 12);
+            this.label4.TabIndex = 4;
+            this.label4.Text = "合并后的文件名：";
+            // 
+            // tb_dragMergeName
+            // 
+            this.tb_dragMergeName.Location = new System.Drawing.Point(123, 25);
+            this.tb_dragMergeName.Name = "tb_dragMergeName";
+            this.tb_dragMergeName.Size = new System.Drawing.Size(179, 21);
+            this.tb_dragMergeName.TabIndex = 5;
+            this.tb_dragMergeName.Text = "000001";
+            // 
+            // btn_dragClear
+            // 
+            this.btn_dragClear.Location = new System.Drawing.Point(447, 10);
+            this.btn_dragClear.Name = "btn_dragClear";
+            this.btn_dragClear.Size = new System.Drawing.Size(75, 23);
+            this.btn_dragClear.TabIndex = 3;
+            this.btn_dragClear.Text = "清空";
+            this.btn_dragClear.UseVisualStyleBackColor = true;
+            // 
+            // btn_dragMerge
+            // 
+            this.btn_dragMerge.Location = new System.Drawing.Point(306, 339);
+            this.btn_dragMerge.Name = "btn_dragMerge";
+            this.btn_dragMerge.Size = new System.Drawing.Size(75, 23);
+            this.btn_dragMerge.TabIndex = 2;
+            this.btn_dragMerge.Text = "合并";
+            this.btn_dragMerge.UseVisualStyleBackColor = true;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(8, 14);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(231, 14);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "请将需要合并的文件拖进以下区域：";
+            // 
+            // check_dragFile
+            // 
+            this.check_dragFile.AutoSize = true;
+            this.check_dragFile.Location = new System.Drawing.Point(135, 339);
+            this.check_dragFile.Name = "check_dragFile";
+            this.check_dragFile.Size = new System.Drawing.Size(74, 18);
+            this.check_dragFile.TabIndex = 14;
+            this.check_dragFile.Text = "pdf文件";
+            this.check_dragFile.UseVisualStyleBackColor = true;
+            // 
+            // check_dragImg
+            // 
+            this.check_dragImg.AutoSize = true;
+            this.check_dragImg.Checked = true;
+            this.check_dragImg.Location = new System.Drawing.Point(58, 339);
+            this.check_dragImg.Name = "check_dragImg";
+            this.check_dragImg.Size = new System.Drawing.Size(53, 18);
+            this.check_dragImg.TabIndex = 13;
+            this.check_dragImg.TabStop = true;
+            this.check_dragImg.Text = "图片";
+            this.check_dragImg.UseVisualStyleBackColor = true;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(308, 34);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(35, 12);
+            this.label7.TabIndex = 8;
+            this.label7.Text = "*.pdf";
+            // 
+            // btn_dragOpenDir
+            // 
+            this.btn_dragOpenDir.Location = new System.Drawing.Point(464, 339);
+            this.btn_dragOpenDir.Name = "btn_dragOpenDir";
+            this.btn_dragOpenDir.Size = new System.Drawing.Size(128, 23);
+            this.btn_dragOpenDir.TabIndex = 15;
+            this.btn_dragOpenDir.Text = "打开合并目录";
+            this.btn_dragOpenDir.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -648,6 +809,10 @@
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_pdfImgNum)).EndInit();
             this.tabControl1.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
+            this.tabPage2.PerformLayout();
+            this.groupBox9.ResumeLayout(false);
+            this.groupBox9.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -702,6 +867,20 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.RadioButton check_pdf;
         private System.Windows.Forms.RadioButton check_img;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button btn_dragMerge;
+        private System.Windows.Forms.Button btn_dragClear;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox tb_dragMergeName;
+        private System.Windows.Forms.GroupBox groupBox9;
+        private System.Windows.Forms.Button btn_dragSetPath;
+        private System.Windows.Forms.Label lbx_dragSavePath;
+        private System.Windows.Forms.TextBox tb_dragText;
+        private System.Windows.Forms.RadioButton check_dragFile;
+        private System.Windows.Forms.RadioButton check_dragImg;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Button btn_dragOpenDir;
     }
 }
 
